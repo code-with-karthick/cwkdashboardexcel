@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CWK Admin - Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #ffffff;
+            color: #1f2937;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Splash Intro Screen for 5 seconds */
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .splash-logo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #dc2626;
+            animation: pulseLogo 1.5s infinite alternate, fadeInSplash 1s ease-in-out;
+        }
+
+        .splash-title {
+            margin-top: 20px;
+            color: #dc2626;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            animation: fadeInSplash 1.5s ease-in-out;
+        }
+
+        @keyframes pulseLogo {
+            0% { transform: scale(0.9); box-shadow: 0 0 15px rgba(220, 38, 38, 0.3); }
+            100% { transform: scale(1.1); box-shadow: 0 0 35px rgba(220, 38, 38, 0.7); }
+        }
+
+        @keyframes fadeInSplash {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Login Card */
+        .login-card {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.15);
+            width: 340px;
+            text-align: center;
+            border: 2px solid #fee2e2;
+            display: none; /* Hidden initially until splash ends */
+            animation: fadeInCard 1s ease-in-out;
+        }
+
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .login-logo img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid #dc2626;
+        }
+
+        h2 { color: #dc2626; margin-bottom: 20px; font-size: 22px; }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            color: #1f2937;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus { border-color: #dc2626; background: #fff; }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button:hover { background: #b91c1c; }
+    </style>
+</head>
+<body>
+
+    <!-- 5 Seconds Splash Animation Screen -->
+    <div id="splashScreen">
+        <img src="{{ url_for('static', filename='cwklogo.png') }}" alt="CWK Logo" class="splash-logo">
+        <div class="splash-title">CODE WITH KARTHICK</div>
+    </div>
+
+    <!-- Main Login Card -->
+    <div class="login-card" id="loginCard">
+        <div class="login-logo">
+            <img src="{{ url_for('static', filename='cwklogo.png') }}" alt="CWK Logo">
+        </div>
+        <h2>CWK Admin Portal</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username (admin)" required>
+            <input type="password" id="password" placeholder="Password (admin123)" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        // Exact 5 seconds intro animation timer
+        setTimeout(function() {
+            const splash = document.getElementById('splashScreen');
+            const card = document.getElementById('loginCard');
+            
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                card.style.display = 'block';
+            }, 800); // Fade out transition duration
+        }, 5000); // 5000 milliseconds = 5 seconds
+
+        // Login submission handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if(data.success) {
+                window.location.href = '/dashboard';
+            } else {
+                alert(data.message);
+            }
+        });
+    </script>
+</body>
+</html>
